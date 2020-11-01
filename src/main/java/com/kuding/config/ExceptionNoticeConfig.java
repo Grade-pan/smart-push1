@@ -2,8 +2,8 @@ package com.kuding.config;
 
 import java.time.Duration;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+import com.kuding.web.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -36,24 +36,23 @@ public class ExceptionNoticeConfig {
 	@Autowired
 	private RestTemplateBuilder restTemplateBuilder;
 
-	private final Log logger = LogFactory.getLog(ExceptionNoticeConfig.class);
+	private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(getClass());
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ExceptionNoticeResolverFactory exceptionNoticeResolverFactory() {
-		logger.debug("创建resolverFactory");
-		ExceptionNoticeResolverFactory exceptionNoticeResolverFactory = new ExceptionNoticeResolverFactory();
-		return exceptionNoticeResolverFactory;
+	public ExceptionHandler exceptionHandler() {
+		ExceptionHandler exceptionHandler = new ExceptionHandler(exceptionNoticeProperty,
+				exceptionNoticeFrequencyStrategy);
+		logger.info("创建成功核心组件成功:ExceptionHandler");
+		return exceptionHandler;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ExceptionHandler exceptionHandler(DingdingHttpClient httpClient,
-			ExceptionNoticeResolverFactory exceptionNoticeResolverFactory) {
-		logger.debug("创建exceptionHandler");
-		ExceptionHandler exceptionHandler = new ExceptionHandler(exceptionNoticeProperty,
-				exceptionNoticeFrequencyStrategy);
-		return exceptionHandler;
+	public ExceptionNoticeResolverFactory exceptionNoticeResolverFactory() {
+		ExceptionNoticeResolverFactory exceptionNoticeResolverFactory = new ExceptionNoticeResolverFactory();
+		logger.info("创建resolverFactory工厂成功");
+		return exceptionNoticeResolverFactory;
 	}
 
 	@Bean
@@ -64,12 +63,5 @@ public class ExceptionNoticeConfig {
 		return dingdingHttpClient;
 	}
 
-	@Bean
-	@ConditionalOnMissingBean
-	public  dingdingHttpClient() {
-		RestTemplate restTemplate = restTemplateBuilder.setConnectTimeout(Duration.ofSeconds(20)).build();
-		DingdingHttpClient dingdingHttpClient = new DefaultDingdingHttpClient(restTemplate);
-		return dingdingHttpClient;
-	}
 
 }

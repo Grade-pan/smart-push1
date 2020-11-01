@@ -104,6 +104,8 @@ public class ExceptionNoticeProperty {
 	 */
 	private boolean enableAsyncNotice = false;
 
+
+
 	public ProjectEnviroment getProjectEnviroment() {
 		return projectEnviroment;
 	}

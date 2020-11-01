@@ -3,8 +3,7 @@ package com.kuding.config;
 import java.util.List;
 import java.util.concurrent.ThreadPoolExecutor.CallerRunsPolicy;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -25,34 +24,32 @@ import com.kuding.properties.ExceptionNoticeAsyncProperties;
 import com.kuding.text.ExceptionNoticeResolverFactory;
 
 @Configuration
-//@ConditionalOnProperty(name = "exceptionnotice.open-notice", havingValue = "true", matchIfMissing = true)
 @AutoConfigureAfter({ ExceptionNoticeConfig.class })
-@ConditionalOnBean({ ExceptionHandler.class, ExceptionNoticeResolverFactory.class })
+@ConditionalOnBean({ ExceptionHandler.class, ExceptionNoticeResolverFactory.class})
 @EnableConfigurationProperties({ ExceptionNoticeAsyncProperties.class })
 public class ExceptionNoticeDecorationConfig {
 
 	@Autowired
 	private ExceptionNoticeAsyncProperties noticeAsyncProperties;
 
-	private final Log logger = LogFactory.getLog(ExceptionNoticeDecorationConfig.class);
-
+	private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(getClass());
 	@Autowired(required = false)
-	public void setSendConfig(List<ExceptionSendComponentConfigure> configures, ExceptionHandler exceptionHandler) {
-		logger.debug("发送组件数量：" + configures.size());
-		configures.forEach(x -> x.addSendComponent(exceptionHandler));
+	public void setSendConfig(List<ExceptionSendComponentConfigure> configures, ExceptionNoticeHandlerDecoration exceptionNoticeHandlerDecoration) {
+		configures.forEach(x -> x.addSendComponent(exceptionNoticeHandlerDecoration, null));
+		logger.info("发送组件数量：" + configures.size());
 	}
 
 	@Autowired(required = false)
 	public void setResolverConfig(List<ExceptionNoticeResolverConfigure> configures,
 			ExceptionNoticeResolverFactory exceptionNoticeResolverFactory) {
-		logger.debug("解析组件数量：" + configures.size());
+
 		configures.forEach(x -> x.addResolver(exceptionNoticeResolverFactory));
+		logger.info("解析组件数量：" + configures.size());
 	}
 
 	@Bean
 	@ConditionalOnProperty(value = "exceptionnotice.enable-async-notice", havingValue = "true")
-	public ExceptionNoticeHandlerDecoration exceptionNoticeHandlerDecoration(ExceptionHandler exceptionHandler) {
-		logger.debug("创建异步通知组件");
+	public ExceptionNoticeHandlerDecoration getAsyncExceptionNoticeHandler(ExceptionHandler exceptionHandler){
 		ThreadPoolTaskExecutor poolTaskExecutor = new ThreadPoolTaskExecutor();
 		poolTaskExecutor.setMaxPoolSize(noticeAsyncProperties.getMaxPoolSize());
 		poolTaskExecutor.setCorePoolSize(noticeAsyncProperties.getCorePoolSize());
@@ -62,18 +59,20 @@ public class ExceptionNoticeDecorationConfig {
 		poolTaskExecutor.setRejectedExecutionHandler(new CallerRunsPolicy());
 		poolTaskExecutor.setWaitForTasksToCompleteOnShutdown(true);
 		poolTaskExecutor.initialize();
-		ExceptionNoticeHandlerDecoration decoration = new AsyncExceptionNoticeHandler(exceptionHandler,
-				poolTaskExecutor);
-		return decoration;
+		AsyncExceptionNoticeHandler asyncExceptionNoticeHandler = new AsyncExceptionNoticeHandler(exceptionHandler, poolTaskExecutor);
+		logger.info("创建异步信息AsyncExceptionNoticeHandler");
+		return asyncExceptionNoticeHandler;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(value = "exceptionnotice.enable-async-notice", matchIfMissing = true, havingValue = "false")
-	public ExceptionNoticeHandlerDecoration defaultExceptionNoticeHandlerDecoration(ExceptionHandler exceptionHandler) {
-		logger.debug("创建默认通知组件");
-		ExceptionNoticeHandlerDecoration decoration = new DefaultExceptionNoticeHandler(exceptionHandler);
-		return decoration;
+	@ConditionalOnProperty(value = "exceptionnotice.enable-async-notice", havingValue = "false", matchIfMissing = true)
+	public ExceptionNoticeHandlerDecoration getDefaultExceptionNoticeHandler(ExceptionHandler exceptionHandler){
+
+		DefaultExceptionNoticeHandler defaultExceptionNoticeHandler= new DefaultExceptionNoticeHandler(exceptionHandler);
+		logger.info("创建同步信息DefaultExceptionNoticeHandler");
+		return defaultExceptionNoticeHandler;
 	}
+
 
 }

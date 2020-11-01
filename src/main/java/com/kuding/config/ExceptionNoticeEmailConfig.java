@@ -2,42 +2,48 @@ package com.kuding.config;
 
 import java.util.Map;
 
+import com.kuding.exceptionhandle.interfaces.ExceptionNoticeHandlerDecoration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.mail.MailProperties;
 import org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.mail.MailSender;
 
 import com.kuding.config.interfaces.ExceptionSendComponentConfigure;
-import com.kuding.exceptionhandle.ExceptionHandler;
 import com.kuding.message.EmailNoticeSendComponent;
 import com.kuding.properties.EmailExceptionNoticeProperty;
 import com.kuding.properties.ExceptionNoticeProperty;
 import com.kuding.text.ExceptionNoticeResolverFactory;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 @Configuration
 @AutoConfigureAfter({ MailSenderAutoConfiguration.class })
-@ConditionalOnBean({ MailSender.class, ExceptionHandler.class, ExceptionNoticeResolverFactory.class })
-public class ExceptionNoticeEmailConfig implements ExceptionSendComponentConfigure {
+@EnableConfigurationProperties(MailProperties.class)
+@ConditionalOnClass({ExceptionNoticeHandlerDecoration.class, MailProperties.class})
+
+public class ExceptionNoticeEmailConfig implements ExceptionSendComponentConfigure{
 
 	@Autowired
-	private MailSender mailSender;
-	@Autowired
-	private MailProperties mailProperties;
-	@Autowired
-	private ExceptionNoticeProperty exceptionNoticeProperty;
-	@Autowired
-	private ExceptionNoticeResolverFactory exceptionNoticeResolverFactory;
+	private JavaMailSenderImpl mailSender;
+    @Autowired
+    private ExceptionNoticeProperty exceptionNoticeProperty;
+    @Autowired
+    private ExceptionNoticeResolverFactory exceptionNoticeResolverFactory;
 
-	@Override
-	public void addSendComponent(ExceptionHandler exceptionHandler) {
+	private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(getClass());
+
+    @Override
+	public void addSendComponent(ExceptionNoticeHandlerDecoration exceptionNoticeHandlerDecoration,MailProperties mailProperties) {
 		Map<String, EmailExceptionNoticeProperty> emails = exceptionNoticeProperty.getEmail();
 		if (emails != null && emails.size() > 0) {
+
 			EmailNoticeSendComponent component = new EmailNoticeSendComponent(mailSender, mailProperties, emails,
 					exceptionNoticeResolverFactory);
-			exceptionHandler.registerNoticeSendComponent(component);
+		exceptionNoticeHandlerDecoration.getExceptionHandler().registerNoticeSendComponent(component);
+			logger.info("注册邮件人员信息{}",emails);
 		}
+
 	}
 }

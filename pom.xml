@@ -65,18 +65,24 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 			<optional>true</optional>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>RELEASE</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 
 	<distributionManagement>
 		<repository>
-			<id>deploy</id>
-			<name>private-framework-repo</name>
-			<url>http://repo.codef.top/repository/maven-releases/</url>
+			<id>alimaven</id>
+			<name>aliyun maven</name>
+			<url>http://maven.aliyun.com/nexus/content/groups/public/</url>
 		</repository>
 		<snapshotRepository>
-			<id>deploy</id>
-			<name>public-framework-repo</name>
-			<url>http://repo.codef.top/repository/maven-snapshots/</url>
+			<id>alimaven</id>
+			<name>aliyun maven</name>
+			<url>http://maven.aliyun.com/nexus/content/groups/public/</url>
 		</snapshotRepository>
 	</distributionManagement>
 </project>

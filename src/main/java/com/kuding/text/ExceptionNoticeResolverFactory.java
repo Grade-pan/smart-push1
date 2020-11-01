@@ -18,13 +18,12 @@ public class ExceptionNoticeResolverFactory {
 
 	public String resolve(String resolverKey, ExceptionNotice exceptionNotice) {
 		ExceptionNoticeResolver noticeResolver = resolverMap.getOrDefault(resolverKey, defaultResolver);
-		logger.debug("resolver：" + noticeResolver.getClass());
 		String notice = noticeResolver.resolve(exceptionNotice);
 		return notice;
 	}
 
 	public void addNoticeResolver(String resolveKey, ExceptionNoticeResolver resolver) {
-		logger.debug("添加解析器-->" + resolveKey + "---" + resolver.getClass());
+		logger.info("添加解析器-->" + resolveKey + "---" + resolver.getClass());
 		resolverMap.putIfAbsent(resolveKey, resolver);
 	}
 

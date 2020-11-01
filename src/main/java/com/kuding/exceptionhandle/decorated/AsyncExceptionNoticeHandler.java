@@ -2,22 +2,22 @@ package com.kuding.exceptionhandle.decorated;
 
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import com.kuding.exceptionhandle.interfaces.ExceptionNoticeHandlerDecoration;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import com.kuding.exceptionhandle.ExceptionHandler;
-import com.kuding.exceptionhandle.interfaces.ExceptionNoticeHandlerDecoration;
-import com.kuding.exceptions.PrometheusException;
 
-public class AsyncExceptionNoticeHandler implements ExceptionNoticeHandlerDecoration, InitializingBean {
+
+
+public class AsyncExceptionNoticeHandler implements  ExceptionNoticeHandlerDecoration, InitializingBean {
 
 	private final ExceptionHandler exceptionHandler;
 
 	private final ThreadPoolTaskExecutor poolTaskExecutor;
 
-	private final Log logger = LogFactory.getLog(getClass());
+	private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(getClass());
 
 	public AsyncExceptionNoticeHandler(ExceptionHandler exceptionHandler, ThreadPoolTaskExecutor poolTaskExecutor) {
 		this.exceptionHandler = exceptionHandler;
@@ -37,7 +37,13 @@ public class AsyncExceptionNoticeHandler implements ExceptionNoticeHandlerDecora
 	@Override
 	public void createHttpNotice(String blamedFor, RuntimeException exception, String url, Map<String, String> param,
 			String requesBody, Map<String, String> headers) {
+
 		poolTaskExecutor.execute(new CreateHttpNoticeRunnable(blamedFor, exception, url, param, requesBody, headers));
+	}
+
+	@Override
+	public boolean check() {
+		return getExceptionHandler().getBlameMap().size() == 0;
 	}
 
 	class createNoticeRunnable implements Runnable {
@@ -98,15 +104,17 @@ public class AsyncExceptionNoticeHandler implements ExceptionNoticeHandlerDecora
 		}
 	}
 
-	@Override
-	public ExceptionHandler getExceptionHandler() {
-		return exceptionHandler;
-	}
+
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		if (check())
-			throw new PrometheusException("不存在异常通知的背锅侠，请设置后再试！！");
+//		if (check()) {
+//			throw new PrometheusException("不存在异常通知的背锅侠，请设置后再试！！");
+//		}
 		getExceptionHandler().getBlameMap().forEach((x, y) -> logger.debug(x + "-->" + y));
+	}
+	@Override
+	public ExceptionHandler getExceptionHandler(){
+		return exceptionHandler;
 	}
 }

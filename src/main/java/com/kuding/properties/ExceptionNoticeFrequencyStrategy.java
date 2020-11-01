@@ -22,12 +22,12 @@ public class ExceptionNoticeFrequencyStrategy {
 	/**
 	 * 此次出现相同的异常时，与上次通知的时间做对比，假如超过此设定的值，则再次通知
 	 */
-	private Duration noticeTimeInterval = Duration.ofHours(8);
+	private Duration noticeTimeInterval = Duration.ofHours(4);
 
 	/**
 	 * 此次出现相同异常时，与上次通知的出现次数作对比，假如超过此设定的值，则再次通知
 	 */
-	private Long noticeShowCount = 100L;
+	private Long noticeShowCount = 50L;
 
 	/**
 	 * @return the frequencyType

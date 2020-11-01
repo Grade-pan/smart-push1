@@ -1,19 +1,10 @@
 package com.kuding.config;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcRegistrations;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.HandlerExceptionResolver;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.mvc.method.annotation.RequestBodyAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
@@ -25,35 +16,24 @@ import com.kuding.web.CurrentRequestHeaderResolver;
 import com.kuding.web.CurrentRequetBodyResolver;
 import com.kuding.web.DefaultRequestBodyResolver;
 import com.kuding.web.DefaultRequestHeaderResolver;
-import com.kuding.web.ExceptionNoticeResolver;
+import com.kuding.web.ExceptionHttpNoticeResolver;
 
 @Configuration
 @AutoConfigureAfter({ ExceptionNoticeDecorationConfig.class })
-@ConditionalOnClass({ WebMvcConfigurer.class, RequestBodyAdvice.class, RequestMappingHandlerAdapter.class })
-@ConditionalOnProperty(name = "exceptionnotice.listen-type", havingValue = "web-mvc")
-@ConditionalOnBean({ ExceptionNoticeHandlerDecoration.class })
-public class ExceptionNoticeWebListenConfig implements WebMvcConfigurer, WebMvcRegistrations {
+@ConditionalOnClass({ WebMvcConfigurer.class, RequestBodyAdvice.class, RequestMappingHandlerAdapter.class,
+		ExceptionNoticeHandlerDecoration.class, ExceptionNoticeProperty.class})
+public class ExceptionNoticeWebListenConfig  {
 
-	@Autowired
-	private ExceptionNoticeHandlerDecoration exceptionHandler;
-	@Autowired
-	private ExceptionNoticeProperty exceptionNoticeProperty;
 
-	@Override
-	public void extendHandlerExceptionResolvers(List<HandlerExceptionResolver> resolvers) {
-		resolvers.add(0, exceptionNoticeResolver());
-	}
+
+	private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(getClass());
 
 	@Bean
-	public ExceptionNoticeResolver exceptionNoticeResolver() {
-		ExceptionNoticeResolver exceptionNoticeResolver = new ExceptionNoticeResolver(exceptionHandler,
+	public ExceptionHttpNoticeResolver exceptionNoticeResolver(ExceptionNoticeHandlerDecoration exceptionNoticeHandlerDecoration,ExceptionNoticeProperty exceptionNoticeProperty){
+		logger.info("添加ExceptionHttpNoticeResolver");
+		ExceptionHttpNoticeResolver exceptionNoticeResolver = new ExceptionHttpNoticeResolver( exceptionNoticeHandlerDecoration,
 				currentRequetBodyResolver(), currentRequestHeaderResolver(), exceptionNoticeProperty);
 		return exceptionNoticeResolver;
-	}
-
-	@Override
-	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(clearBodyInterceptor());
 	}
 
 	@Bean
@@ -62,7 +42,6 @@ public class ExceptionNoticeWebListenConfig implements WebMvcConfigurer, WebMvcR
 		return bodyInterceptor;
 
 	}
-
 	@Bean
 	@ConditionalOnMissingBean(value = CurrentRequestHeaderResolver.class)
 	public CurrentRequestHeaderResolver currentRequestHeaderResolver() {
@@ -74,11 +53,6 @@ public class ExceptionNoticeWebListenConfig implements WebMvcConfigurer, WebMvcR
 		return new DefaultRequestBodyResolver();
 	}
 
-	@Override
-	public RequestMappingHandlerAdapter getRequestMappingHandlerAdapter() {
-		RequestMappingHandlerAdapter adapter = new RequestMappingHandlerAdapter();
-		adapter.setRequestBodyAdvice(Arrays.asList(currentRequetBodyResolver()));
-		return adapter;
-	}
+
 
 }

@@ -1,8 +1,8 @@
 package com.kuding.config;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Configuration;
 
@@ -23,17 +23,19 @@ public class ExceptionNoticeDingdingResolverConfig implements ExceptionNoticeRes
 	@Autowired
 	private ExceptionNoticeProperty exceptionNoticeProperty;
 
-	private final Log logger = LogFactory.getLog(ExceptionNoticeDingdingResolverConfig.class);
+	private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(getClass());
 
 	@Override
 	public void addResolver(ExceptionNoticeResolverFactory exceptionNoticeResolverFactory) {
-		logger.debug("添加钉钉异常信息解析");
+		logger.info("添加钉钉异常信息解析");
 		if (exceptionNoticeProperty.getDingdingTextType() == DingdingTextType.MARKDOWN) {
 			ExceptionNoticeResolver exceptionNoticeResolver = null;
-			if (exceptionNoticeProperty.getListenType() == ListenType.COMMON)
+			if (exceptionNoticeProperty.getListenType() == ListenType.COMMON) {
 				exceptionNoticeResolver = new DefaultMarkdownMessageResolver(exceptionNoticeProperty);
-			if (exceptionNoticeProperty.getListenType() == ListenType.WEB_MVC)
+			}
+			if (exceptionNoticeProperty.getListenType() == ListenType.WEB_MVC) {
 				exceptionNoticeResolver = new DefaultMarkdownHttpMessageResolver(exceptionNoticeProperty);
+			}
 			exceptionNoticeResolverFactory.addNoticeResolver(StandardResolverKey.DINGDING, exceptionNoticeResolver);
 		}
 	}

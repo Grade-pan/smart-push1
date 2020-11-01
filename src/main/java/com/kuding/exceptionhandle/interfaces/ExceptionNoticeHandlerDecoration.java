@@ -7,22 +7,10 @@ import com.kuding.exceptionhandle.ExceptionHandler;
  * 异常信息处理装饰器
 * */
 public interface ExceptionNoticeHandlerDecoration {
-     /**由实现类来完成ExceptionHandler对象
-     * */
+
+
 	public ExceptionHandler getExceptionHandler();
-
-	/**
-	 * 最基础的异常通知的创建方法
-	 * 提供默认实现
-	 * @param blamedFor 谁背锅？
-	 * @param exception 异常信息
-	 * 
-	 * @return
-	 */
-
-	default public void createNotice(String blamedFor, RuntimeException exception) {
-		getExceptionHandler().createNotice(blamedFor, exception);
-	}
+	 public void createNotice(String blamedFor, RuntimeException exception);
 
 	/**
 	 * 反射方式获取方法中出现的异常进行的通知
@@ -33,9 +21,7 @@ public interface ExceptionNoticeHandlerDecoration {
 	 * @param args      参数信息
 	 * @return
 	 */
-	default public void createNotice(String blamedFor, RuntimeException ex, String method, Object[] args) {
-		getExceptionHandler().createNotice(blamedFor, ex, method, args);
-	}
+	 public void createNotice(String blamedFor, RuntimeException ex, String method, Object[] args);
 
 	/**
 	 * 创建一个http请求异常的通知
@@ -48,12 +34,8 @@ public interface ExceptionNoticeHandlerDecoration {
 	 * @param headers
 	 * @return
 	 */
-	default public void createHttpNotice(String blamedFor, RuntimeException exception, String url,
-			Map<String, String> param, String requesBody, Map<String, String> headers) {
-		getExceptionHandler().createHttpNotice(blamedFor, exception, url, param, requesBody, headers);
-	}
+	 public void createHttpNotice(String blamedFor, RuntimeException exception, String url,
+			Map<String, String> param, String requesBody, Map<String, String> headers);
 
-	default public boolean check() {
-		return getExceptionHandler().getBlameMap().size() == 0;
-	}
+	 public boolean check();
 }

@@ -47,21 +47,25 @@ public class EmailNoticeSendComponent implements INoticeSendComponent {
 			mailMessage.setFrom(fromEmail);
 			mailMessage.setTo(emailExceptionNoticeProperty.getTo());
 			String[] cc = emailExceptionNoticeProperty.getCc();
-			if (cc != null && cc.length > 0)
+			if (cc != null && cc.length > 0) {
 				mailMessage.setCc(cc);
+			}
 			String[] bcc = emailExceptionNoticeProperty.getBcc();
-			if (bcc != null && bcc.length > 0)
+			if (bcc != null && bcc.length > 0) {
 				mailMessage.setBcc(bcc);
+			}
 			mailMessage.setText(exceptionNoticeResolverFactory.resolve("email", exceptionNotice));
 			mailMessage.setSubject(String.format("来自%s的异常提醒", exceptionNotice.getProject()));
 			mailSender.send(mailMessage);
-		} else
+		} else {
 			logger.error("无法发送异常通知，不存在的背锅侠");
+		}
 	}
 
 	private boolean isEmail(String email) {
-		if (email != null)
+		if (email != null) {
 			return Pattern.matches("^[A-Za-z0-9_\\-]+@[a-zA-Z0-9_\\-]+(\\.[a-zA-Z]{2,4})+$", email);
+		}
 		return false;
 	}
 
@@ -71,8 +75,9 @@ public class EmailNoticeSendComponent implements INoticeSendComponent {
 
 	private void checkAllEmails(EmailExceptionNoticeProperty emailExceptionNoticeProperty) {
 		String fromEmail = emailExceptionNoticeProperty.getFrom();
-		if (fromEmail != null && !isEmail(fromEmail))
+		if (fromEmail != null && !isEmail(fromEmail)) {
 			throw new IllegalArgumentException("发件人邮箱错误");
+		}
 		String[] toEmail = emailExceptionNoticeProperty.getTo();
 		if (toEmail != null) {
 			for (String email : toEmail) {

@@ -8,8 +8,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.StringUtils;
 
@@ -23,6 +21,7 @@ import com.kuding.redis.ExceptionRedisStorageComponent;
 /**核心处理类,信息发送前的校验
 * */
 public class ExceptionHandler {
+
 	/**redis存储组件
 	* */
 	private ExceptionRedisStorageComponent exceptionRedisStorageComponent;
@@ -41,7 +40,7 @@ public class ExceptionHandler {
 	 * */
 	private final Map<String, ExceptionStatistics> checkUid = Collections.synchronizedMap(new HashMap<>());
 
-	private final Log logger = LogFactory.getLog(getClass());
+	private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(getClass());
 
 	public ExceptionHandler(ExceptionNoticeProperty exceptionNoticeProperty,
 			ExceptionNoticeFrequencyStrategy exceptionNoticeFrequencyStrategy) {
@@ -107,8 +106,9 @@ public class ExceptionHandler {
 				exceptionNoticeProperty.getIncludedTracePackage(), null);
 		exceptionNotice.setProject(exceptionNoticeProperty.getProjectName());
 		boolean noHas = persist(exceptionNotice);
-		if (noHas)
+		if (noHas) {
 			messageSend(blamedFor, exceptionNotice);
+		}
 		return exceptionNotice;
 
 	}
@@ -123,8 +123,9 @@ public class ExceptionHandler {
 		List<Class<? extends Throwable>> thisEClass = getAllExceptionClazz(exception);
 		List<Class<? extends RuntimeException>> list = exceptionNoticeProperty.getExcludeExceptions();
 		for (Class<? extends RuntimeException> clazz : list) {
-			if (thisEClass.stream().anyMatch(c -> clazz.isAssignableFrom(c)))
+			if (thisEClass.stream().anyMatch(c -> clazz.isAssignableFrom(c))) {
 				return true;
+			}
 		}
 		return false;
 	}
@@ -163,8 +164,9 @@ public class ExceptionHandler {
 				args);
 		exceptionNotice.setProject(exceptionNoticeProperty.getProjectName());
 		boolean noHas = persist(exceptionNotice);
-		if (noHas)
+		if (noHas) {
 			messageSend(blamedFor, exceptionNotice);
+		}
 		return exceptionNotice;
 
 	}
@@ -187,14 +189,16 @@ public class ExceptionHandler {
 	public HttpExceptionNotice createHttpNotice(String blamedFor, RuntimeException exception, String url,
 			Map<String, String> param, String requesBody, Map<String, String> headers) {
 		blamedFor = checkBlameFor(blamedFor);
-		if (containsException(exception))
+		if (containsException(exception)) {
 			return null;
+		}
 		HttpExceptionNotice exceptionNotice = new HttpExceptionNotice(exception,
 				exceptionNoticeProperty.getIncludedTracePackage(), url, param, requesBody, headers);
 		exceptionNotice.setProject(exceptionNoticeProperty.getProjectName());
 		boolean noHas = persist(exceptionNotice);
-		if (noHas)
+		if (noHas) {
 			messageSend(blamedFor, exceptionNotice);
+		}
 		return exceptionNotice;
 	}
 	/**
@@ -208,7 +212,6 @@ public class ExceptionHandler {
 		Boolean needNotice = false;
 		String uid = exceptionNotice.getUid();
 		ExceptionStatistics exceptionStatistics = checkUid.get(uid);
-		logger.debug(exceptionStatistics);
 		if (exceptionStatistics != null) {
 			//先将该异常的通知策略加一
 			Long count = exceptionStatistics.plusOne();
@@ -260,8 +263,8 @@ public class ExceptionHandler {
 			return exceptionNoticeFrequencyStrategy.getNoticeTimeInterval().compareTo(dur) < 0;
 		//如果showcount超出阀数，则一直通知
 		case SHOWCOUNT:
-			return exceptionStatistics.getShowCount().longValue() - exceptionStatistics.getLastShowedCount()
-					.longValue() > exceptionNoticeFrequencyStrategy.getNoticeShowCount().longValue();
+			return (exceptionStatistics.getShowCount().longValue() - exceptionStatistics.getLastShowedCount()
+					.longValue()) > exceptionNoticeFrequencyStrategy.getNoticeShowCount().longValue();
 		}
 		return false;
 	}

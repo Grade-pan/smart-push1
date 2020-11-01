@@ -19,7 +19,6 @@ import com.kuding.redis.ExceptionRedisStorageComponent;
 @ConditionalOnClass({ StringRedisTemplate.class })
 @ConditionalOnProperty(name = "exceptionnotice.enable-redis-storage", havingValue = "true")
 @ConditionalOnMissingBean(value = { ExceptionRedisStorageComponent.class })
-@ConditionalOnBean({ ExceptionHandler.class })
 @AutoConfigureAfter({ ExceptionNoticeConfig.class })
 public class ExceptionNoticeRedisConfiguration {
 
