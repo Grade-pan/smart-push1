@@ -4,5 +4,5 @@ import com.kuding.content.ExceptionNotice;
 
 public interface ExceptionNoticeResolver {
 
-	public String resolve(ExceptionNotice exceptionNotice);
+    public String resolve(ExceptionNotice exceptionNotice);
 }

@@ -1,17 +1,16 @@
 package com.kuding.properties;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
 import com.kuding.properties.enums.DingdingTextType;
 import com.kuding.properties.enums.EmailTextType;
 import com.kuding.properties.enums.ListenType;
 import com.kuding.properties.enums.ProjectEnviroment;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**在application.yml或者在application.properties里面获取
  * 如果修改读取的配置文件可以在下方@ConfigurationPropertie注解里面修改里面参数信息

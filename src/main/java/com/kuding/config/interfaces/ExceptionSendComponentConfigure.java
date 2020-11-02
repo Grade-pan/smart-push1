@@ -5,5 +5,5 @@ import org.springframework.boot.autoconfigure.mail.MailProperties;
 
 public interface ExceptionSendComponentConfigure {
 
-	 public void addSendComponent(ExceptionNoticeHandlerDecoration exceptionNoticeHandlerDecoration, MailProperties mailProperties);
+    public void addSendComponent(ExceptionNoticeHandlerDecoration exceptionNoticeHandlerDecoration, MailProperties mailProperties);
 }

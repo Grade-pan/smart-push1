@@ -1,18 +1,17 @@
 package com.kuding.message;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.regex.Pattern;
-
+import com.kuding.content.ExceptionNotice;
+import com.kuding.properties.EmailExceptionNoticeProperty;
+import com.kuding.text.ExceptionNoticeResolverFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.autoconfigure.mail.MailProperties;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 
-import com.kuding.content.ExceptionNotice;
-import com.kuding.properties.EmailExceptionNoticeProperty;
-import com.kuding.text.ExceptionNoticeResolverFactory;
+import java.util.Collection;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 public class EmailNoticeSendComponent implements INoticeSendComponent {
 

@@ -1,48 +1,4 @@
-# 一个异常通知的spring-boot-start框架 prometheus-spring-boot-starter
 
-## 前言
-
-前一段时间很忙，也没时间更新，最近趁着双旦刚过的闲暇时间把这个异常通知框架的team分支进行一次大更新。
-
-
-## 2020-01-03更新（大更新）
-
-1. 版本号正式升级为**0.5.1-team**
-2. 新增：**异步通知**
-3. 新增：异常通知文本结构自定义
-4. 新增：异常通知的**环境类型**
-5. 新增：钉钉的**markdown文本支持**
-6. 新增：**钉钉的加签验证**
-7. 改进：自定义钉钉通知流程
-8. 改进：config自动化配置
-9. 改进：钉钉的调用所需的HTTPclient可自行配置，默认配置改为spring中resttemplate，原来的SimpleHttpclient已被废弃，这意味着依赖中需要spring-boot-starter-web
-10. 改进：对于异常信息中caused by进行了处理
-11. 修复bug
-
-
-## 2019-06-24更新
-
-1. 改进：web处理增加一个拦截器，专门清除为异常通知保存的请求体信息
-2. 修复bug：修复了初次出现异常产生的并发导致重复发送的问题
-3. 当前版本号变为**0.3.5-team**
-
-
-## 前言
-
-对于工程的开发，必然会伴随着各种bug，工程量越大，出现bug的频率也会越高。一般对于代码量较小的工程来说，一个人可能就足够去做开发与维护；但是对于代码量较大的工程往往是需要一个小团队协作开发。当工程基本完成，开始部署测试环境或者生产环境时，这些环境并不能像开发环境一样能快速的调试与维护，线上的工程一旦出现异常时，开发团队就需要主动感知异常并协调处理，当然人不能一天24小时去盯着线上工程，所以就需要一种机制来自动化的对异常进行通知，并精确到谁负责的那块代码。这样会极大地方便后续的运维。因此，本项目的团队版上线
-
-## 系统需求
-
-![jdk版本](https://img.shields.io/badge/java-1.8%2B-red.svg?style=for-the-badge&logo=appveyor)
-![maven版本](https://img.shields.io/badge/maven-3.2.5%2B-red.svg?style=for-the-badge&logo=appveyor)
-![spring boot](https://img.shields.io/badge/spring%20boot-2.0.0.RELEASE%2B-red.svg?style=for-the-badge&logo=appveyor)
-
-## 当前版本
-
-![目前工程版本](https://img.shields.io/badge/version-0.5.1--team-green.svg?style=for-the-badge&logo=appveyor)
-
-
-## 最快上手
 
 1. 将此工程通过``mvn clean install``打包到本地仓库中。
 2. 在你的工程中的``pom.xml``中做如下依赖
@@ -445,5 +401,3 @@ public class MyExceptionTextResolverConfig implements ExceptionNoticeResolverCon
 
 #### 2、0.5.1-team这个版本默认需要依赖spring-boot-starter-web，所以在工程中配置此框架必须要引入spring-boot-starter-web，我这块还没处理好，所以对于非web项目目前请自行改造
 
-
-[![Fork me on Gitee](https://gitee.com/ITEater/prometheus-spring-boot-starter/widgets/widget_2.svg)](https://gitee.com/ITEater/prometheus-spring-boot-starter)

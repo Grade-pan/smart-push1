@@ -2,16 +2,16 @@ package com.kuding.properties.enums;
 
 public enum EmailTextType {
 
-	TEXT("text");
+    TEXT("text");
 
-	private final String value;
+    private final String value;
 
-	public String getValue() {
-		return value;
-	}
+    public String getValue() {
+        return value;
+    }
 
-	private EmailTextType(String value) {
-		this.value = value;
-	}
+    private EmailTextType(String value) {
+        this.value = value;
+    }
 
 }

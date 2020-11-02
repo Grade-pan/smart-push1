@@ -1,13 +1,13 @@
 package com.kuding.message;
 
-import java.util.Collection;
-
 import com.kuding.content.ExceptionNotice;
+
+import java.util.Collection;
 
 public interface INoticeSendComponent {
 
-	public void send(String blamedFor, ExceptionNotice exceptionNotice);
+    public void send(String blamedFor, ExceptionNotice exceptionNotice);
 
-	public Collection<String> getAllBuddies();
+    public Collection<String> getAllBuddies();
 
 }
